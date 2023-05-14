@@ -23,10 +23,11 @@ class Ad(models.Model):
         return {
         'id' : self.id,
         'name' : self.name,
-        'author' : self.author,
+        'author' : self.author.username,
         'price' : self.price,
         'description' : self.description,
-        'address' : self.address,
+        'category': self.category,
+        'image' : self.image.url if self.image else None,
         'is_published' : self.is_published
         }
 
@@ -42,7 +43,6 @@ class Category(models.Model):
 def __str__(self):
     return self.name
 
-    def serialize(self):
-        return {
-        'name' : self.name
-        }
+
+def serialize(self):
+    return {'name': self.name}
