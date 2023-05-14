@@ -1,5 +1,6 @@
 import json
 
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -10,31 +11,22 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView, D
 from ads.models import Ad, Category
 from users.models import User
 
-"""@method_decorator(csrf_exempt, name="dispatch")
-class AdListCreateView(View):
-    def get(self, request):
-        all_ads = Ad.object.all
-        return JsonResponse([ad.serialize() for ad in all_ads], safe=False)
 
-    def post(self, request):
-        data = json.loads(request.body)
-        new_ad = Ad.objects.create(**data)
-        return JsonResponse(new_ad.serialize())
-
-
-class AdDitailView(DetailView):
-    model = Ad
-
-    def get(self, request, *args, **kwargs):
-        return JsonResponse(self.get_object().serialize())"""
-
+TOTAL_ON_PAGE = 5
 
 class AdListView(ListView):
     queryset = Ad.objects.order_by("-price")
 
     def get(self, request, *args, **kwargs):
+        super().get(request, *args, **kwargs)
+        paginator = Paginator(self.object_list, TOTAL_ON_PAGE)
+        page_number = request.GET.get("page")
+        ads_on_page = paginator.get_page(page_number)
+
         all_ads = Ad.objects.all
-        return JsonResponse([ad.serialize() for ad in all_ads], safe=False)
+        return JsonResponse({"total": paginator.count,
+                             "num_pages": paginator.num_pages,
+                             "items": [ad.serialize() for ad in ads_on_page]}, safe=False)
 
 
 @method_decorator(csrf_exempt, name="dispatch")

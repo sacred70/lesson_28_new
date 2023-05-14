@@ -38,3 +38,14 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
+
+    def serialize(self):
+        return {
+        'id' : self.id,
+        'username' : self.username,
+        'first_name' : self.first_name,
+        'last_name' : self.last_name,
+        'age' : self.age,
+        'locations': [loc.name for loc in self.locations.all()],
+        'role' : self.role
+        }
