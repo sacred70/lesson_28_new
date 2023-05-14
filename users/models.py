@@ -5,8 +5,8 @@ from django.db.models import TextChoices
 
 class Location(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6)
-    lng = models.DecimalField(max_digits=9, decimal_places=6)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True)
 
     class Meta:
         verbose_name = "Локация"

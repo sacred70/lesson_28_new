@@ -12,7 +12,7 @@ def root(request):
 
 
 class CategoryListView(ListView):
-    model = Category
+    queryset = Category.objects.order_by("name")
 
 
     def get(self, request, *args, **kwargs):

@@ -1,5 +1,6 @@
 import json
 from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -10,7 +11,8 @@ TOTAL_ON_PAGE = 5
 
 
 class UserListView(ListView):
-    model = User
+    queryset = User.objects.prefetch_related("location").annotate(total_ads=Count("ad"),
+                                                                  filter=Q(ad__is_published=True))
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
@@ -21,7 +23,8 @@ class UserListView(ListView):
 
         return JsonResponse({"total": paginator.count,
                              "num_pages": paginator.num_pages,
-                             "items": [user.serialize() for user in users_on_page]}, safe=False)
+                             "items": [{**user.serialize(), "total_ads": user.total_ads}
+                                       for user in users_on_page]}, safe=False)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
